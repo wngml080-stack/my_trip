@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { LuShield, LuCheck, LuX, LuTriangleAlert } from "react-icons/lu";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface UserData {
   id: string;
   clerk_id: string;
