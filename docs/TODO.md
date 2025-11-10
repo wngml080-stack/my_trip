@@ -12,7 +12,7 @@
   - [x] 공통 로딩/에러 컴포넌트 초안 작성
   - [x] `lib/types/` 디렉토리 생성 후 `tour.ts` 등 핵심 타입 정의
   - [x] `lib/api/tour-api.ts` 기본 HTTP 클라이언트(요청/에러 핸들링) 구현
-- [ ] Phase 2: 홈페이지(`/`)
+- [x] Phase 2: 홈페이지(`/`)
   - [x] 관광지 카드 컴포넌트 (`components/tour-card.tsx`) 초안 작성
   - [x] 관광지 목록 렌더링 (`components/tour-list.tsx`) — 하드코딩 데이터로 UI 검증
   - [x] 한국관광공사 `areaBasedList2` 연동 및 실제 데이터 표출
@@ -40,11 +40,16 @@
   - [x] Supabase 스키마 확인 (`supabase/migrations/schema.sql`) 및 마이그레이션 반영
   - [x] 북마크 버튼 컴포넌트 (`components/bookmarks/bookmark-button.tsx`) 작성
   - [x] 상세 페이지에 북마크 토글 연동 + 상태 관리
-  - [ ] 인증 여부에 따른 처리 흐름 (Clerk 로그인 유도, 비로그인 임시 저장 전략 정의)
+  - [x] 인증 여부에 따른 처리 흐름 (Clerk 로그인 유도 - 비로그인 시 `/sign-in`으로 리다이렉트)
   - [x] 북마크 목록 페이지 (`app/bookmarks/page.tsx`, `components/bookmarks/bookmark-list.tsx`) 구현
-  - [ ] 정렬/필터(최신순, 이름순, 지역별) 및 일괄 삭제 동작
+  - [x] 정렬/필터(북마크 추가일순, 이름순, 지역별) 및 일괄 삭제 동작
+  - [x] 북마크 목록에 체크박스 선택 기능 추가 (`components/tour-list.tsx`에 `selectionMode` 지원)
+  - [x] 전체 선택/해제 기능 구현
 - [ ] Phase 5: 테스트, 최적화, 배포 준비
   - [x] Vitest + Testing Library 기반 핵심 기능 테스트 작성 (`tests/lib/sort-tours.test.ts`, `tests/lib/coordinates.test.ts`, `tests/components/detail-gallery.test.tsx`)
+  - [x] Vitest 설정 완료 (`vitest.config.mjs` - ESM 모듈 지원, React JSX 변환 설정)
+  - [x] PostCSS 설정 수정 (`postcss.config.mjs` - Tailwind v4 호환)
+  - [x] 테스트 환경 설정 및 오류 수정 (React import, JSX 변환, 테스트 케이스 수정)
   - [x] 이미지 최적화 및 외부 도메인 설정 (`next.config.ts`)
   - [ ] 전역 에러/예외 처리 패턴 정리
   - [x] SEO 작업 (OG 태그 검증, sitemap/robots 점검)
