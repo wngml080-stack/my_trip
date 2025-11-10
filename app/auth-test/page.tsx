@@ -10,6 +10,8 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
 interface UserData {
   id: string;
   clerk_id: string;
@@ -18,6 +20,22 @@ interface UserData {
 }
 
 export default function AuthTestPage() {
+  if (!clerkPublishableKey) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-8 text-center">
+        <LuTriangleAlert className="w-16 h-16 text-yellow-500" />
+        <h1 className="text-2xl font-bold">Clerk 환경변수가 설정되지 않았어요</h1>
+        <p className="text-gray-600">
+          `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` 환경변수를 설정한 뒤 다시 배포하면
+          이 페이지를 사용할 수 있습니다.
+        </p>
+        <Link href="/">
+          <Button>홈으로 돌아가기</Button>
+        </Link>
+      </div>
+    );
+  }
+
   const { user, isLoaded } = useUser();
   const supabase = useClerkSupabaseClient();
 
