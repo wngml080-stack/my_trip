@@ -12,6 +12,10 @@
 
 import { BookmarkList } from "@/components/bookmarks/bookmark-list";
 
+// Clerk useUser 훅 사용을 위해 동적 렌더링 강제
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default function BookmarksPage() {
   return (
     <main className="min-h-[calc(100vh-80px)]">
