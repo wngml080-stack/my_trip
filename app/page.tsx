@@ -12,7 +12,7 @@
 
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TourList } from "@/components/tour-list";
 import { TourFilters, type FilterState } from "@/components/tour-filters";
@@ -62,7 +62,7 @@ const SCROLL_OPTIONS: ScrollIntoViewOptions = {
   inline: "nearest",
 };
 
-export default function HomePage() {
+function HomePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -617,5 +617,17 @@ export default function HomePage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-[calc(100vh-64px)] flex items-center justify-center">
+        <Loading text="페이지를 불러오는 중..." />
+      </main>
+    }>
+      <HomePageContent />
+    </Suspense>
   );
 }

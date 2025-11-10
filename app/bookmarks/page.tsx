@@ -8,6 +8,8 @@
  * - components/bookmarks/bookmark-list: BookmarkList 컴포넌트
  */
 
+"use client";
+
 import { BookmarkList } from "@/components/bookmarks/bookmark-list";
 
 export default function BookmarksPage() {

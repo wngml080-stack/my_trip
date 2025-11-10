@@ -1,3 +1,4 @@
+import React from "react";
 import "@testing-library/jest-dom/vitest";
 
 // Next.js App Router hooks 사용을 위한 기본 mock
@@ -16,7 +17,8 @@ vi.mock("next/image", () => ({
   __esModule: true,
   default: ({ alt, ...props }: { alt: string } & Record<string, unknown>) => (
     // eslint-disable-next-line @next/next/no-img-element
-    <img alt={alt} {...props} />
+    <img alt={alt} {...(props as React.ImgHTMLAttributes<HTMLImageElement>)} />
   ),
 }));
+
 
