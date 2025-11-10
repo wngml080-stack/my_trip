@@ -1,0 +1,28 @@
+# Vercel 배포 시 제외할 파일/디렉토리
+
+# 개발 환경 파일
+.env.local
+.env.development
+.env.test
+
+# 테스트 파일
+tests/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# 문서
+docs/
+*.md
+!README.md
+
+# 설정 파일
+.cursor/
+.vscode/
+.idea/
+
+# 기타
+plan.md
+*.log
+

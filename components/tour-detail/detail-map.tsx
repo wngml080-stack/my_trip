@@ -29,13 +29,11 @@ interface DetailMapProps {
 
 export function DetailMap({ detail, className }: DetailMapProps) {
   const coords = convertCoordinates(detail.mapx, detail.mapy);
+  const hasValidCoords = coords !== null;
 
   // 네이버 지도 길찾기 URL 생성
-  const getNaverMapUrl = () => {
-    const lat = coords.lat;
-    const lng = coords.lng;
-    return `https://map.naver.com/v5/search/${encodeURIComponent(detail.title)}`;
-  };
+  const getNaverMapUrl = () =>
+    `https://map.naver.com/v5/search/${encodeURIComponent(detail.title)}`;
 
   // TourDetail을 TourItem 형태로 변환 (NaverMap 컴포넌트 호환)
   const tourItem = {
@@ -70,14 +68,21 @@ export function DetailMap({ detail, className }: DetailMapProps) {
       </div>
 
       <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800">
-        <NaverMap
-          tours={[tourItem]}
-          className="h-[400px]"
-        />
+        {hasValidCoords ? (
+          <NaverMap tours={[tourItem]} className="h-[400px]" />
+        ) : (
+          <div className="flex h-[240px] items-center justify-center bg-gray-100 text-sm text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+            제공된 좌표 정보가 없어 지도를 표시할 수 없어요.
+          </div>
+        )}
       </div>
 
       <div className="text-sm text-gray-600 dark:text-gray-400">
-        <p>위도: {coords.lat.toFixed(6)}, 경도: {coords.lng.toFixed(6)}</p>
+        {hasValidCoords ? (
+          <p>위도: {coords.lat.toFixed(6)}, 경도: {coords.lng.toFixed(6)}</p>
+        ) : (
+          <p>좌표 정보가 없습니다.</p>
+        )}
       </div>
     </div>
   );

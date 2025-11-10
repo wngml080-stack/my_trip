@@ -23,9 +23,9 @@
   - [x] 데스크톱 스티키 요약 툴바 및 지도 표시 토글
   - [x] 모바일 리스트/지도 탭 전환 UI 및 반응형 레이아웃 보완
   - [x] 카드·마커 선택 시 상호 하이라이트 및 초기 선택 동기화
-  - [ ] 리스트-지도 상호작용(클릭 시 포커싱, 선택 표시) 구현
-  - [ ] 정렬 옵션(최신순/이름순) 및 페이지네이션 or 무한 스크롤 도입
-  - [ ] 로딩/에러 UX 개선 (스켈레톤, 재시도 버튼 등)
+  - [x] 리스트-지도 상호작용(클릭 시 포커싱, 선택 표시) 구현
+  - [x] 정렬 옵션(최신순/이름순) 및 페이지네이션 or 무한 스크롤 도입
+  - [x] 로딩/에러 UX 개선 (스켈레톤, 재시도 버튼 등)
 - [x] Phase 3: 상세페이지(`/places/[contentId]`)
   - [x] 라우팅 및 페이지 골격 (`app/places/[contentId]/page.tsx`) 구성
   - [x] `detailCommon2` 연동: 기본 정보 섹션 (`components/tour-detail/detail-info.tsx`)
@@ -34,7 +34,7 @@
   - [x] 공유 버튼 (`components/tour-detail/share-button.tsx`) — 클립보드 복사 + 토스트
   - [x] Open Graph 메타데이터 생성 로직 추가
   - [x] 운영 정보 섹션 (`detailIntro2` → `detail-intro.tsx`) 구현
-  - [ ] 이미지 갤러리 (`detailImage2` → `detail-gallery.tsx`) — 모달/슬라이드 포함
+  - [x] 이미지 갤러리 (`detailImage2` → `detail-gallery.tsx`) — 모달/슬라이드 포함
   - [x] 반려동물 정보 (`detailPetTour2` → `detail-pet-tour.tsx`) 표시
 - [x] Phase 4: 북마크 기능
   - [x] Supabase 스키마 확인 (`supabase/migrations/schema.sql`) 및 마이그레이션 반영
@@ -44,9 +44,9 @@
   - [x] 북마크 목록 페이지 (`app/bookmarks/page.tsx`, `components/bookmarks/bookmark-list.tsx`) 구현
   - [ ] 정렬/필터(최신순, 이름순, 지역별) 및 일괄 삭제 동작
 - [ ] Phase 5: 테스트, 최적화, 배포 준비
-  - [ ] Playwright 혹은 React Testing Library 기반 핵심 기능 테스트 작성
+  - [x] Vitest + Testing Library 기반 핵심 기능 테스트 작성 (`tests/lib/sort-tours.test.ts`, `tests/lib/coordinates.test.ts`, `tests/components/detail-gallery.test.tsx`)
   - [x] 이미지 최적화 및 외부 도메인 설정 (`next.config.ts`)
   - [ ] 전역 에러/예외 처리 패턴 정리
   - [x] SEO 작업 (OG 태그 검증, sitemap/robots 점검)
   - [ ] 성능 측정 및 개선 (Lighthouse 등)
-  - [ ] 배포 체크리스트 문서화 및 Vercel 배포 리허설
+  - [x] 배포 체크리스트 문서화 및 Vercel 배포 가이드 작성 (`docs/DEPLOY.md`, `.vercelignore`)

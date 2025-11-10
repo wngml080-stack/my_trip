@@ -32,9 +32,9 @@ function getApiKey(): string {
 
 export async function GET(
   request: Request,
-  context: { params: { endpoint: string } }
+  context: { params: Promise<{ endpoint: string }> }
 ) {
-  const endpoint = context.params.endpoint;
+  const { endpoint } = await context.params;
 
   if (!ALLOWED_ENDPOINTS.has(endpoint)) {
     return NextResponse.json(

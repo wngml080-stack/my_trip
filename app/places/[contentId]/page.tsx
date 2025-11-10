@@ -24,6 +24,7 @@ import { DetailInfo } from "@/components/tour-detail/detail-info";
 import { DetailMap } from "@/components/tour-detail/detail-map";
 import { ShareButton } from "@/components/tour-detail/share-button";
 import { BookmarkButton } from "@/components/bookmarks/bookmark-button";
+import { DetailGallery } from "@/components/tour-detail/detail-gallery";
 import {
   getTourDetail,
   getTourIntro,
@@ -173,27 +174,10 @@ export default async function PlaceDetailPage({ params }: PageProps) {
         )}
 
         {/* 이미지 갤러리 */}
-        {images.length > 0 && (
-          <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
-            <h2 className="text-2xl font-semibold mb-4">이미지 갤러리</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {images.map((image, index) => (
-                <div
-                  key={index}
-                  className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800"
-                >
-                  {image.originimgurl && (
-                    <img
-                      src={image.originimgurl}
-                      alt={image.imagename || `이미지 ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
+          <h2 className="text-2xl font-semibold mb-4">이미지 갤러리</h2>
+          <DetailGallery images={images} />
+        </div>
 
         {/* 반려동물 정보 */}
         {petInfo && (

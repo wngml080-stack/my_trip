@@ -22,7 +22,6 @@ import { useUser } from "@clerk/nextjs";
 import { TourList } from "@/components/tour-list";
 import { Loading } from "@/components/ui/loading";
 import { ErrorDisplay } from "@/components/ui/error";
-import { Button } from "@/components/ui/button";
 import { useClerkSupabaseClient } from "@/lib/supabase/clerk-client";
 import { getBookmarks } from "@/lib/api/bookmark-api";
 import { getTourDetail } from "@/lib/api/tour-api";

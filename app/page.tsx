@@ -20,7 +20,7 @@ import { TourSearch } from "@/components/tour-search";
 import { NaverMap } from "@/components/naver-map";
 import { TourSort } from "@/components/tour-sort";
 import { ErrorDisplay } from "@/components/ui/error";
-import { Loading } from "@/components/ui/loading";
+import { CardListSkeleton, Loading } from "@/components/ui/loading";
 import { Button } from "@/components/ui/button";
 import type { TourItem } from "@/lib/types/tour";
 import { getTourList, searchTours } from "@/lib/api/tour-api";
@@ -33,7 +33,7 @@ import {
   sortTours,
   type SortOrder,
 } from "@/lib/tour/sort";
-import { Filter, List, Map } from "lucide-react";
+import { Filter, List, Map as MapIcon } from "lucide-react";
 
 const AREA_LABELS: Record<string, string> = {
   "1": "서울",
@@ -85,7 +85,9 @@ export default function HomePage() {
   const filtersSectionRef = useRef<HTMLDivElement | null>(null);
   const mapSectionRef = useRef<HTMLDivElement | null>(null);
   const toursRef = useRef<TourItem[]>([]);
-  const cardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
+  const cardRefs = useRef<Map<string, HTMLDivElement | null>>(
+    new Map<string, HTMLDivElement | null>()
+  );
   const isProgrammaticScroll = useRef(false);
   const sortOrderRef = useRef<SortOrder>("latest");
 
@@ -173,7 +175,9 @@ export default function HomePage() {
         setTours(sortedTours);
         setTotalCount(response.totalCount);
 
-        isProgrammaticScroll.current = true;
+        if (isFirstPage) {
+          isProgrammaticScroll.current = true;
+        }
         setSelectedTourId((prev) =>
           getNextSelectedTourId(sortedTours, isFirstPage ? undefined : prev)
         );
@@ -428,7 +432,7 @@ export default function HomePage() {
                   </>
                 ) : (
                   <>
-                    <Map className="h-4 w-4" /> 지도 함께 보기
+                    <MapIcon className="h-4 w-4" /> 지도 함께 보기
                   </>
                 )}
               </Button>
@@ -442,19 +446,27 @@ export default function HomePage() {
                 ref={filtersSectionRef}
                 className="rounded-2xl border border-gray-200/80 bg-white/90 p-5 shadow-md shadow-gray-200/50 backdrop-blur dark:border-gray-800 dark:bg-gray-900/90 dark:shadow-none"
               >
-                <div className="mb-4 flex items-center justify-between">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                   <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     필터
                   </h2>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="gap-2 rounded-full px-3 text-xs font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-300 dark:hover:bg-blue-950/40"
-                    onClick={() => setFilters({})}
-                  >
-                    초기화
-                  </Button>
+                  <div className="flex items-center gap-3">
+                    <TourSort
+                      value={sortOrder}
+                      onChange={handleSortChange}
+                      size="sm"
+                      className="lg:hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="gap-2 rounded-full px-3 text-xs font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-300 dark:hover:bg-blue-950/40"
+                      onClick={() => setFilters({})}
+                    >
+                      초기화
+                    </Button>
+                  </div>
                 </div>
                 <div
                   id="desktop-filters"
@@ -546,6 +558,11 @@ export default function HomePage() {
                           onSelectTour={handleSelectTour}
                           getCardRef={handleRegisterCardRef}
                         />
+                        {isLoadingMore && (
+                          <div className="mt-6">
+                            <CardListSkeleton count={3} />
+                          </div>
+                        )}
                         {hasMore && (
                           <div className="mt-6 flex justify-center">
                             <Button

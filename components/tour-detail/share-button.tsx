@@ -28,7 +28,6 @@ interface ShareButtonProps {
 
 export function ShareButton({
   contentId,
-  title,
   className,
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);

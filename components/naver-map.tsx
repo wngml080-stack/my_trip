@@ -18,7 +18,7 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import type { TourItem } from "@/lib/types/tour";
 import { convertCoordinates } from "@/lib/types/tour";
 import { cn } from "@/lib/utils";
@@ -48,6 +48,21 @@ export function NaverMap({
     Array<{ marker: any; infoWindow: any; tourId: string }>
   >([]);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const getValidTours = useCallback(() => {
+    return tours
+      .map((tour) => {
+        const coords = convertCoordinates(tour.mapx, tour.mapy);
+        if (!coords) {
+          return null;
+        }
+        return { tour, coords };
+      })
+      .filter(
+        (value): value is { tour: TourItem; coords: { lat: number; lng: number } } =>
+          value !== null
+      );
+  }, [tours]);
 
   // 네이버 지도 API 스크립트 로드
   useEffect(() => {
@@ -79,6 +94,8 @@ export function NaverMap({
   useEffect(() => {
     if (!isLoaded || !mapInstanceRef.current || !window.naver) return;
 
+    const validTours = getValidTours();
+
     // 기존 마커 제거
     markersRef.current.forEach(({ marker, infoWindow }) => {
       infoWindow.close();
@@ -86,8 +103,7 @@ export function NaverMap({
     });
     markersRef.current = [];
 
-    tours.forEach((tour) => {
-      const coords = convertCoordinates(tour.mapx, tour.mapy);
+    validTours.forEach(({ tour, coords }) => {
       const position = new window.naver.maps.LatLng(coords.lat, coords.lng);
       const marker = new window.naver.maps.Marker({
         position,
@@ -121,20 +137,23 @@ export function NaverMap({
       markersRef.current.push({ marker, infoWindow, tourId: tour.contentid });
     });
 
-    if (tours.length > 0) {
-      const firstTourCoords = convertCoordinates(tours[0].mapx, tours[0].mapy);
+    if (validTours.length > 0) {
+      const firstCoords = validTours[0].coords;
       mapInstanceRef.current.setCenter(
-        new window.naver.maps.LatLng(firstTourCoords.lat, firstTourCoords.lng)
+        new window.naver.maps.LatLng(firstCoords.lat, firstCoords.lng)
       );
       mapInstanceRef.current.setZoom(11);
     }
-  }, [isLoaded, tours, onMarkerClick]);
+  }, [isLoaded, tours, onMarkerClick, getValidTours]);
 
   // 선택된 관광지 하이라이트
   useEffect(() => {
     if (!isLoaded || !mapInstanceRef.current || !window.naver) return;
 
-    const targetTour = tours.find((tour) => tour.contentid === selectedTourId);
+    const validTours = getValidTours();
+    const targetTour = validTours.find(
+      (item) => item.tour.contentid === selectedTourId
+    );
 
     markersRef.current.forEach(({ marker, infoWindow, tourId }) => {
       if (tourId === selectedTourId) {
@@ -145,12 +164,12 @@ export function NaverMap({
     });
 
     if (targetTour) {
-      const coords = convertCoordinates(targetTour.mapx, targetTour.mapy);
+      const { coords } = targetTour;
       const latLng = new window.naver.maps.LatLng(coords.lat, coords.lng);
       mapInstanceRef.current.panTo(latLng);
       mapInstanceRef.current.setZoom(14);
     }
-  }, [isLoaded, selectedTourId, tours]);
+  }, [isLoaded, selectedTourId, tours, getValidTours]);
 
   if (!isLoaded) {
     return (

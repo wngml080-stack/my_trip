@@ -32,6 +32,19 @@ import type {
  */
 const BASE_URL = "/api/tour";
 
+function getBaseUrl(): string {
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
+
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.SITE_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null);
+
+  return siteUrl ?? "http://localhost:3000";
+}
+
 /**
  * 공통 파라미터
  */
@@ -48,6 +61,8 @@ async function fetchTourApi<T>(
   endpoint: string,
   params: Record<string, string | number>
 ): Promise<TourApiResponse<T>> {
+  const normalizedEndpoint = endpoint.replace(/^\/+/, "");
+
   const searchParams = new URLSearchParams({
     ...Object.entries(COMMON_PARAMS).reduce<Record<string, string>>(
       (acc, [key, value]) => {
@@ -61,7 +76,8 @@ async function fetchTourApi<T>(
     ),
   });
 
-  const url = `${BASE_URL}/${endpoint}?${searchParams.toString()}`;
+  const baseUrl = getBaseUrl() || "http://localhost:3000";
+  const url = `${baseUrl}${BASE_URL}/${normalizedEndpoint}?${searchParams.toString()}`;
 
   try {
     const response = await fetch(url, {

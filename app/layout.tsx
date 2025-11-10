@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+  ),
   title: "My Trip - 한국 관광지 정보",
   description: "한국관광공사 공공 API를 활용한 전국 관광지 정보 서비스",
   keywords: ["관광지", "여행", "한국", "관광정보", "My Trip"],

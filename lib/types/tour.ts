@@ -168,14 +168,21 @@ export interface TourApiResponse<T> {
 
 /**
  * 좌표 변환 유틸리티
- * KATEC 좌표계를 WGS84로 변환 (네이버 지도용)
+ *
+ * 한국관광공사 API는 WGS84 좌표(경도 mapx, 위도 mapy)를 문자열 형태로 제공한다.
+ * 잘못된 값이 들어오는 것을 대비해 숫자로 변환 후 유효하지 않으면 null을 반환한다.
  */
 export function convertCoordinates(
-  mapx: string,
-  mapy: string
-): { lng: number; lat: number } {
-  const x = parseInt(mapx, 10) / 10000000;
-  const y = parseInt(mapy, 10) / 10000000;
-  return { lng: x, lat: y };
+  mapx: string | undefined,
+  mapy: string | undefined
+): { lng: number; lat: number } | null {
+  const lng = typeof mapx === "string" ? parseFloat(mapx) : Number.NaN;
+  const lat = typeof mapy === "string" ? parseFloat(mapy) : Number.NaN;
+
+  if (Number.isNaN(lng) || Number.isNaN(lat)) {
+    return null;
+  }
+
+  return { lng, lat };
 }
 

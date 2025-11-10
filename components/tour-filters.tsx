@@ -20,7 +20,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { CONTENT_TYPES } from "@/lib/types/tour";
 import type { AreaCode } from "@/lib/types/tour";
-import { getAreaCodes } from "@/lib/api/tour-api";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 
@@ -64,8 +63,8 @@ export function TourFilters({
   onFiltersChange,
   className,
 }: TourFiltersProps) {
-  const [areas, setAreas] = useState<AreaCode[]>(DEFAULT_AREAS);
-  const [isLoadingAreas, setIsLoadingAreas] = useState(false);
+  const [areas] = useState<AreaCode[]>(DEFAULT_AREAS);
+  const isLoadingAreas = false; // 현재는 하드코딩된 지역 목록 사용
 
   // 지역 코드 로드 (선택 사항: API에서 동적으로 가져오기)
   useEffect(() => {

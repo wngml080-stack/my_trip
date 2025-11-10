@@ -286,6 +286,25 @@ pnpm dev
 - `/auth-test`: Clerk + Supabase 인증 통합 테스트
 - `/storage-test`: Supabase Storage 업로드 테스트
 
+#### 9. Vercel 배포
+
+배포 가이드는 [`docs/DEPLOY.md`](./docs/DEPLOY.md)를 참고하세요.
+
+**빠른 배포:**
+
+```bash
+# Vercel CLI 설치 (최초 1회)
+npm i -g vercel
+
+# 로그인
+vercel login
+
+# 배포
+vercel --prod
+```
+
+또는 [Vercel Dashboard](https://vercel.com/dashboard)에서 GitHub 저장소를 연결하여 배포할 수 있습니다.
+
 ### 개발 명령어
 
 ```bash
