@@ -39,7 +39,8 @@ type BookmarkItem = TourItem & {
   bookmarkCreatedAt: string;
 };
 
-export function BookmarkList() {
+// 실제 북마크 목록 컴포넌트 (모든 훅 사용)
+function BookmarkListContent() {
   const { isSignedIn, user } = useUser();
   const router = useRouter();
   const supabase = useClerkSupabaseClient();
@@ -301,5 +302,22 @@ export function BookmarkList() {
       )}
     </div>
   );
+}
+
+// 래퍼 컴포넌트 (환경 변수 체크)
+export function BookmarkList() {
+  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+  if (!clerkPublishableKey) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4 p-8 text-center">
+        <p className="text-gray-600">
+          Clerk 환경변수가 설정되지 않아 북마크 기능을 사용할 수 없습니다.
+        </p>
+      </div>
+    );
+  }
+
+  return <BookmarkListContent />;
 }
 
