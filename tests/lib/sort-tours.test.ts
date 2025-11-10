@@ -80,8 +80,12 @@ describe("mergeAndSortTours", () => {
     );
 
     expect(merged).toHaveLength(2);
-    expect(merged[0].contentid).toBe("300");
-    expect(merged[1].modifiedtime).toBe("20250101010101");
+    // "latest" 정렬: modifiedtime이 더 최신인 항목이 먼저
+    // "100"의 modifiedtime "20250101010101"이 "300"의 "20241225080000"보다 최신이므로 첫 번째
+    expect(merged[0].contentid).toBe("100");
+    expect(merged[0].modifiedtime).toBe("20250101010101");
+    expect(merged[1].contentid).toBe("300");
+    expect(merged[1].modifiedtime).toBe("20241225080000");
   });
 });
 

@@ -1,3 +1,4 @@
+import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
@@ -43,9 +44,13 @@ describe("DetailGallery", () => {
     });
     await user.click(secondThumbnail);
 
-    expect(
-      screen.getByAltText(/둘째 이미지/i)
-    ).toBeInTheDocument();
+    // 대표 이미지 영역에서 "둘째 이미지"를 찾음 (썸네일과 구분)
+    // getAllByAltText를 사용하여 첫 번째 요소(대표 이미지)를 선택
+    const mainImages = screen.getAllByAltText(/둘째 이미지/i);
+    const mainImage = mainImages.find(
+      (img) => img.getAttribute("sizes") === "(max-width: 768px) 100vw, 75vw"
+    );
+    expect(mainImage).toBeInTheDocument();
   });
 
   it("opens modal and navigates through images", async () => {
