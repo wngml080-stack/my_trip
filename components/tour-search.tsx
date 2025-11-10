@@ -17,7 +17,7 @@
 
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Filter, Search } from "lucide-react";
@@ -41,6 +41,10 @@ export function TourSearch({
   onFilterClick,
 }: TourSearchProps) {
   const [keyword, setKeyword] = useState(initialKeyword);
+
+  useEffect(() => {
+    setKeyword(initialKeyword);
+  }, [initialKeyword]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

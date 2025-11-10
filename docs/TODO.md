@@ -8,7 +8,7 @@
   - [x] 앱 기본 아이콘 및 메타 파일 (`favicon.ico`, `manifest.ts`, `robots.ts`, `sitemap.ts`, `not-found.tsx`) 생성
 - [x] Phase 1: 기본 구조 & 공통 설정
   - [x] Next.js 프로젝트 셋업 및 라우팅 구조 점검 (`app/layout.tsx`, `app/page.tsx`)
-  - [ ] 한국관광공사 API, Clerk, Supabase 환경변수 정의 및 문서화
+  - [x] 한국관광공사 API, Clerk, Supabase 환경변수 정의 및 문서화
   - [x] 공통 로딩/에러 컴포넌트 초안 작성
   - [x] `lib/types/` 디렉토리 생성 후 `tour.ts` 등 핵심 타입 정의
   - [x] `lib/api/tour-api.ts` 기본 HTTP 클라이언트(요청/에러 핸들링) 구현
@@ -19,6 +19,10 @@
   - [x] 지역/타입/반려동물 필터 UI (`components/tour-filters.tsx`) 및 상태 관리
   - [x] 키워드 검색 UI (`components/tour-search.tsx`)와 `searchKeyword2` 연동
   - [x] 지도 컴포넌트 (`components/naver-map.tsx`) 기본 표시 + 마커 표시
+  - [x] 히어로 섹션 및 대형 검색창, 통계 배지 구성
+  - [x] 데스크톱 스티키 요약 툴바 및 지도 표시 토글
+  - [x] 모바일 리스트/지도 탭 전환 UI 및 반응형 레이아웃 보완
+  - [x] 카드·마커 선택 시 상호 하이라이트 및 초기 선택 동기화
   - [ ] 리스트-지도 상호작용(클릭 시 포커싱, 선택 표시) 구현
   - [ ] 정렬 옵션(최신순/이름순) 및 페이지네이션 or 무한 스크롤 도입
   - [ ] 로딩/에러 UX 개선 (스켈레톤, 재시도 버튼 등)

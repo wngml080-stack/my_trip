@@ -24,7 +24,8 @@ interface TourCardProps {
   tour: TourItem;
   className?: string;
   isActive?: boolean;
-  onHover?: (tourId: string) => void;
+  onFocusTour?: () => void;
+  onBlurTour?: () => void;
 }
 
 /**
@@ -40,7 +41,13 @@ function getContentTypeName(contentTypeId: string): string {
  */
 const DEFAULT_IMAGE = "/og-image.png";
 
-export function TourCard({ tour, className, isActive, onHover }: TourCardProps) {
+export function TourCard({
+  tour,
+  className,
+  isActive,
+  onFocusTour,
+  onBlurTour,
+}: TourCardProps) {
   const imageUrl = tour.firstimage || tour.firstimage2 || DEFAULT_IMAGE;
   const contentTypeName = getContentTypeName(tour.contenttypeid);
 
@@ -48,40 +55,42 @@ export function TourCard({ tour, className, isActive, onHover }: TourCardProps) 
     <Link
       href={`/places/${tour.contentid}`}
       className={cn(
-        "group block rounded-lg border border-gray-200 dark:border-gray-800",
-        "bg-white dark:bg-gray-900",
-        "hover:shadow-lg transition-shadow duration-200",
-        "overflow-hidden",
-        isActive && "border-blue-500 shadow-lg shadow-blue-100/60 dark:border-blue-400",
+        "group block overflow-hidden rounded-2xl border border-gray-200 bg-white transition-all duration-200 dark:border-gray-800 dark:bg-gray-900",
+        "hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-100/50",
+        isActive &&
+          "border-blue-500 shadow-lg shadow-blue-100/60 ring-2 ring-blue-200/70 dark:border-blue-400 dark:ring-blue-900/60",
         className
       )}
-      onMouseEnter={() => onHover?.(tour.contentid)}
-      onFocus={() => onHover?.(tour.contentid)}
+      onMouseEnter={() => onFocusTour?.()}
+      onFocus={() => onFocusTour?.()}
+      onMouseLeave={() => onBlurTour?.()}
+      onBlur={() => onBlurTour?.()}
+      onClick={() => onFocusTour?.()}
       aria-current={isActive ? "true" : undefined}
     >
       {/* 썸네일 이미지 */}
-      <div className="relative w-full h-48 bg-gray-100 dark:bg-gray-800 overflow-hidden">
+      <div className="relative h-48 w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
         <Image
           src={imageUrl}
           alt={tour.title}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-200"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         {/* 타입 뱃지 */}
         <div className="absolute top-2 right-2">
-          <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-600 text-white">
+          <span className="rounded-full bg-blue-600 px-2 py-1 text-xs font-medium text-white shadow-sm shadow-blue-900/30">
             {contentTypeName}
           </span>
         </div>
       </div>
 
       {/* 카드 내용 */}
-      <div className="p-4 space-y-2">
-        <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+      <div className="space-y-2 p-4">
+        <h3 className="line-clamp-2 text-lg font-semibold transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
           {tour.title}
         </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
+        <p className="line-clamp-1 text-sm text-gray-600 dark:text-gray-400">
           {tour.addr1}
           {tour.addr2 && ` ${tour.addr2}`}
         </p>

@@ -30,7 +30,7 @@ import type {
 /**
  * API Base URL
  */
-const BASE_URL = "https://apis.data.go.kr/B551011/KorService2";
+const BASE_URL = "/api/tour";
 
 /**
  * 공통 파라미터
@@ -42,36 +42,26 @@ const COMMON_PARAMS = {
 } as const;
 
 /**
- * API 키 가져오기 (환경변수에서)
- */
-function getApiKey(): string {
-  const key =
-    process.env.NEXT_PUBLIC_TOUR_API_KEY || process.env.TOUR_API_KEY;
-  if (!key) {
-    throw new Error(
-      "한국관광공사 API 키가 설정되지 않았습니다. NEXT_PUBLIC_TOUR_API_KEY 또는 TOUR_API_KEY 환경변수를 설정해주세요."
-    );
-  }
-  return key;
-}
-
-/**
  * API 요청 헬퍼 함수
  */
 async function fetchTourApi<T>(
   endpoint: string,
   params: Record<string, string | number>
 ): Promise<TourApiResponse<T>> {
-  const apiKey = getApiKey();
   const searchParams = new URLSearchParams({
-    serviceKey: apiKey,
-    ...COMMON_PARAMS,
+    ...Object.entries(COMMON_PARAMS).reduce<Record<string, string>>(
+      (acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      },
+      {}
+    ),
     ...Object.fromEntries(
-      Object.entries(params).map(([k, v]) => [k, String(v)])
+      Object.entries(params).map(([key, value]) => [key, String(value)])
     ),
   });
 
-  const url = `${BASE_URL}${endpoint}?${searchParams.toString()}`;
+  const url = `${BASE_URL}/${endpoint}?${searchParams.toString()}`;
 
   try {
     const response = await fetch(url, {

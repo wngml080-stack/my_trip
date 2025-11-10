@@ -26,7 +26,7 @@ interface TourListProps {
   isLoading?: boolean;
   className?: string;
   selectedTourId?: string;
-  onSelectTour?: (tourId: string) => void;
+  onSelectTour?: (tourId?: string) => void;
 }
 
 export function TourList({
@@ -62,7 +62,7 @@ export function TourList({
           key={tour.contentid}
           tour={tour}
           isActive={selectedTourId === tour.contentid}
-          onHover={onSelectTour}
+          onFocusTour={() => onSelectTour?.(tour.contentid)}
         />
       ))}
     </div>
