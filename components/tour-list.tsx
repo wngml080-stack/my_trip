@@ -26,7 +26,8 @@ interface TourListProps {
   isLoading?: boolean;
   className?: string;
   selectedTourId?: string;
-  onSelectTour?: (tourId?: string) => void;
+  onSelectTour?: (tourId?: string, source?: "list" | "map" | "auto") => void;
+  getCardRef?: (tourId: string, node: HTMLDivElement | null) => void;
 }
 
 export function TourList({
@@ -35,6 +36,7 @@ export function TourList({
   className,
   selectedTourId,
   onSelectTour,
+  getCardRef,
 }: TourListProps) {
   if (isLoading) {
     return <CardListSkeleton count={6} />;
@@ -58,12 +60,16 @@ export function TourList({
       )}
     >
       {tours.map((tour) => (
-        <TourCard
+        <div
           key={tour.contentid}
-          tour={tour}
-          isActive={selectedTourId === tour.contentid}
-          onFocusTour={() => onSelectTour?.(tour.contentid)}
-        />
+          ref={(node) => getCardRef?.(tour.contentid, node)}
+        >
+          <TourCard
+            tour={tour}
+            isActive={selectedTourId === tour.contentid}
+            onFocusTour={() => onSelectTour?.(tour.contentid, "list")}
+          />
+        </div>
       ))}
     </div>
   );

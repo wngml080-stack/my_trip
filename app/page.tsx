@@ -12,12 +12,13 @@
 
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TourList } from "@/components/tour-list";
 import { TourFilters, type FilterState } from "@/components/tour-filters";
 import { TourSearch } from "@/components/tour-search";
 import { NaverMap } from "@/components/naver-map";
+import { TourSort } from "@/components/tour-sort";
 import { ErrorDisplay } from "@/components/ui/error";
 import { Loading } from "@/components/ui/loading";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,13 @@ import type { TourItem } from "@/lib/types/tour";
 import { getTourList, searchTours } from "@/lib/api/tour-api";
 import { cn } from "@/lib/utils";
 import { CONTENT_TYPES } from "@/lib/types/tour";
+import {
+  getNextSelectedTourId,
+  isSameOrder,
+  mergeAndSortTours,
+  sortTours,
+  type SortOrder,
+} from "@/lib/tour/sort";
 import { Filter, List, Map } from "lucide-react";
 
 const AREA_LABELS: Record<string, string> = {
@@ -48,6 +56,11 @@ const AREA_LABELS: Record<string, string> = {
 };
 
 const PAGE_SIZE = 20;
+const SCROLL_OPTIONS: ScrollIntoViewOptions = {
+  behavior: "smooth",
+  block: "start",
+  inline: "nearest",
+};
 
 export default function HomePage() {
   const router = useRouter();
@@ -59,6 +72,7 @@ export default function HomePage() {
   const [selectedTourId, setSelectedTourId] = useState<string | undefined>();
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [sortOrder, setSortOrder] = useState<SortOrder>("latest");
 
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -70,6 +84,21 @@ export default function HomePage() {
 
   const filtersSectionRef = useRef<HTMLDivElement | null>(null);
   const mapSectionRef = useRef<HTMLDivElement | null>(null);
+  const toursRef = useRef<TourItem[]>([]);
+  const cardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
+  const isProgrammaticScroll = useRef(false);
+  const sortOrderRef = useRef<SortOrder>("latest");
+
+  const handleRegisterCardRef = useCallback(
+    (id: string, node: HTMLDivElement | null) => {
+      if (!node) {
+        cardRefs.current.delete(id);
+        return;
+      }
+      cardRefs.current.set(id, node);
+    },
+    []
+  );
 
   // URL keyword 동기화
   useEffect(() => {
@@ -78,6 +107,14 @@ export default function HomePage() {
       prev === keywordFromParams ? prev : keywordFromParams
     );
   }, [searchParams]);
+
+  useEffect(() => {
+    sortOrderRef.current = sortOrder;
+  }, [sortOrder]);
+
+  useEffect(() => {
+    toursRef.current = tours;
+  }, [tours]);
 
   // 필터 또는 검색어 변경 시 목록 초기화
   useEffect(() => {
@@ -99,6 +136,13 @@ export default function HomePage() {
       }
       setError(null);
 
+      console.groupCollapsed("[HomePage] fetchTours");
+      console.log("filters", filters);
+      console.log("searchKeyword", searchKeyword);
+      console.log("page", page);
+      console.log("sortOrder", sortOrderRef.current);
+      console.groupEnd();
+
       try {
         const baseParams = {
           areaCode: filters.areaCode,
@@ -116,14 +160,23 @@ export default function HomePage() {
 
         if (ignore) return;
 
-        setTotalCount(response.totalCount);
-        setTours((prev) =>
-          isFirstPage ? response.items : [...prev, ...response.items]
+        const incomingTours = response.items;
+        const activeSortOrder = sortOrderRef.current;
+        const existingTours = isFirstPage ? [] : toursRef.current;
+        const sortedTours = mergeAndSortTours(
+          existingTours,
+          incomingTours,
+          activeSortOrder
         );
 
-        if (isFirstPage && response.items.length > 0) {
-          setSelectedTourId(response.items[0].contentid);
-        }
+        toursRef.current = sortedTours;
+        setTours(sortedTours);
+        setTotalCount(response.totalCount);
+
+        isProgrammaticScroll.current = true;
+        setSelectedTourId((prev) =>
+          getNextSelectedTourId(sortedTours, isFirstPage ? undefined : prev)
+        );
       } catch (err) {
         if (ignore) return;
         setError(
@@ -154,6 +207,43 @@ export default function HomePage() {
     }
   }, [isMapVisible]);
 
+  useEffect(() => {
+    if (!selectedTourId) {
+      return;
+    }
+
+    console.groupCollapsed("[HomePage] selection");
+    console.log("selectedTourId", selectedTourId);
+    console.groupEnd();
+
+    if (!isProgrammaticScroll.current) {
+      return;
+    }
+
+    const targetNode = cardRefs.current.get(selectedTourId);
+    if (targetNode) {
+      targetNode.scrollIntoView(SCROLL_OPTIONS);
+    }
+
+    isProgrammaticScroll.current = false;
+  }, [selectedTourId]);
+
+  useEffect(() => {
+    if (toursRef.current.length === 0) {
+      return;
+    }
+
+    const sorted = sortTours(toursRef.current, sortOrder);
+    if (isSameOrder(toursRef.current, sorted)) {
+      return;
+    }
+
+    toursRef.current = sorted;
+    setTours(sorted);
+    isProgrammaticScroll.current = true;
+    setSelectedTourId((prev) => getNextSelectedTourId(sorted, prev));
+  }, [sortOrder]);
+
   const handleSearch = (keyword: string) => {
     const trimmed = keyword.trim();
     const targetUrl = trimmed ? `/?keyword=${encodeURIComponent(trimmed)}` : "/";
@@ -162,21 +252,37 @@ export default function HomePage() {
     setPage(1);
   };
 
+  const handleSortChange = (order: SortOrder) => {
+    console.groupCollapsed("[HomePage] sort");
+    console.log("order", order);
+    console.groupEnd();
+    setSortOrder(order);
+  };
+
   const scrollToFilters = () => {
     setMobileView("list");
     filtersSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleSelectTour = (tourId?: string) => {
-    setSelectedTourId(tourId);
+  const handleSelectTour = (
+    tourId?: string,
+    source: "list" | "map" | "auto" = "list"
+  ) => {
+    if (!tourId) {
+      setSelectedTourId(undefined);
+      return;
+    }
 
-    if (!tourId) return;
+    isProgrammaticScroll.current = source !== "list";
+    setSelectedTourId(tourId);
 
     if (typeof window !== "undefined" && window.innerWidth < 1024) {
       setMobileView("map");
-      setTimeout(() => {
-        mapSectionRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 120);
+      if (source === "list") {
+        setTimeout(() => {
+          mapSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+        }, 120);
+      }
     }
   };
 
@@ -285,6 +391,11 @@ export default function HomePage() {
               </Button>
             </div>
             <div className="ml-auto flex items-center gap-2">
+              <TourSort
+                value={sortOrder}
+                onChange={handleSortChange}
+                size="sm"
+              />
               <Button
                 type="button"
                 variant="ghost"
@@ -433,6 +544,7 @@ export default function HomePage() {
                           tours={tours}
                           selectedTourId={selectedTourId}
                           onSelectTour={handleSelectTour}
+                          getCardRef={handleRegisterCardRef}
                         />
                         {hasMore && (
                           <div className="mt-6 flex justify-center">
@@ -474,7 +586,9 @@ export default function HomePage() {
                       <NaverMap
                         tours={tours}
                         selectedTourId={selectedTourId}
-                        onMarkerClick={(tour) => handleSelectTour(tour.contentid)}
+                        onMarkerClick={(tour) =>
+                          handleSelectTour(tour.contentid, "map")
+                        }
                         className="h-[600px]"
                       />
                     )}
